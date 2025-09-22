@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tienda Local</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-mode">
+  <header>
+    <h1>Tienda Local</h1>
+    <div class="switcher">
+      <button id="btn-producto">Ver Productos</button>
+      <button id="btn-servicio">Ver Servicios</button>
+    </div>
+  </header>
+  <main>
+    <div id="contenido"></div>
+  </main>
+  <footer>
+    <p>¿Querés ofrecer tu producto o servicio? <a href="https://wa.me/2646706973">Contáctanos</a></p>
+  </footer>
+
+  <script>
+  // main.js contenido inline o referenciado
+  let tipoActual = "producto";
+  const contenido = document.getElementById("contenido");
+  const API_URL = "https://script.google.com/macros/s/AKfycbyoQ5Wp4Dc5tFfzUoG0Iv9dRYWxxNLA8g0z-5YExt0XjfvU5FSOu_MyXbtDJkDs-4oD/exec"; // tu URL del backend
+
+  async function cargarContenido() {
+    try {
+      const resp = await fetch(API_URL);
+      const items = await resp.json();
+      const filtrados = items.filter(item => item.tipo === tipoActual);
+      contenido.innerHTML = "";
+      filtrados.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card lazy";
+        card.innerHTML = `
+          <img data-src="${item.imagen}" alt="${item.nombre}" class="lazy-img" />
+          <h3>${item.nombre}</h3>
+          <p>${item.descripcion}</p>
+          <p><strong>${item.categoria}</strong></p>
+          <p><strong>Precio:</strong> $${item.precio}</p>
+          <p><strong>WhatsApp:</strong> ${item.whatsapp}</p>
+          <p><strong>Email:</strong> ${item.email}</p>
+          <p><strong>Vendedor:</strong> ${item.vendedor}</p>
+          <p><strong>Tienda:</strong> ${item.tienda}</p>
+        `;
+        contenido.appendChild(card);
+      });
+      lazyLoad();
+    } catch(err) {
+      console.error("Error cargando datos:", err);
+    }
+  }
+
+  function lazyLoad() {
+    const imgs = document.querySelectorAll(".lazy-img");
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.classList.remove("lazy-img");
+          obs.unobserve(img);
+        }
+      });
+    });
+    imgs.forEach(img => observer.observe(img));
+  }
+
+  document.getElementById("btn-producto").addEventListener("click", () => {
+    tipoActual = "producto";
+    cargarContenido();
+  });
+  document.getElementById("btn-servicio").addEventListener("click", () => {
+    tipoActual = "servicio";
+    cargarContenido();
+  });
+
+  setInterval(cargarContenido, 10000);
+  cargarContenido();
+  </script>
+
+</body>
+</html>
