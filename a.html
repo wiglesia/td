@@ -1,56 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Tienda Local</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin</title>
   <style>
     body {
-      background: #121212;
-      color: #f0f0f0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1e1e1e;
+      color: #e0e0e0;
+      margin: 0;
       padding: 2rem;
     }
     h1 {
       text-align: center;
-    }
-    form, .card {
-      background: #1e1e1e;
-      border-radius: 10px;
-      padding: 1rem;
       margin-bottom: 2rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
-    }
-    input, select, textarea, button {
-      width: 100%;
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      border-radius: 8px;
-      border: none;
-      font-size: 1rem;
-    }
-    button {
-      background: #1e88e5;
-      color: white;
-      cursor: pointer;
     }
     .switcher, .search-bar {
-      text-align: center;
-      margin-bottom: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
-    .switcher button, .card-buttons button {
-      margin: 0 0.25rem;
-      padding: 0.5rem 1rem;
+    .switcher button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      background: #444;
+      color: #eee;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .switcher button:hover {
+      background: #2196f3;
+    }
+    form {
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      background: #2a2a2a;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    form input, form textarea, form select, form button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #555;
+      background: #333;
+      color: #eee;
+      font-size: 0.95rem;
+    }
+    form button {
+      background: #4caf50;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+    form button:hover {
+      background: #43a047;
+    }
+    .card {
+      display: grid;
+      grid-template-columns: 70px 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      background: #2a2a2a;
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 0.75rem auto;
+      max-width: 800px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
     .card img {
-      max-width: 100%;
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
       border-radius: 8px;
+      border: 1px solid #555;
+    }
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+    }
+    .card-content .title {
+      font-weight: bold;
+      font-size: 1rem;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+    .card-content .meta {
+      font-size: 0.85rem;
+      color: #bbb;
     }
     .card-buttons {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .card-buttons button {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      border-radius: 5px;
+      background: #444;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    .card-buttons button:hover {
+      background: #666;
     }
     #loader {
       color: #ccc;
@@ -61,16 +121,13 @@
 </head>
 <body>
   <h1>Panel Admin</h1>
-
   <div class="switcher">
     <button onclick="filtrar('producto')">Productos</button>
     <button onclick="filtrar('servicio')">Servicios</button>
   </div>
-
   <div class="search-bar">
     <input type="text" id="busqueda" placeholder="Buscar por nombre..." oninput="cargarProductos()">
   </div>
-
   <form id="form-producto">
     <input type="hidden" id="producto-id" />
     <select id="tipo">
@@ -79,12 +136,9 @@
     </select>
     <input type="text" id="nombre" placeholder="Nombre" required />
     <textarea id="descripcion" placeholder="Descripción" required></textarea>
-
-    <label>Imagen:</label>
     <input type="file" id="file-imagen" />
     <div id="loader" style="display:none">Subiendo imagen...</div>
     <input type="url" id="imagen" placeholder="URL de la imagen" required readonly />
-
     <input type="text" id="categoria" placeholder="Categoría" required />
     <input type="number" id="precio" placeholder="Precio" />
     <input type="tel" id="whatsapp" placeholder="WhatsApp" />
@@ -93,7 +147,6 @@
     <input type="text" id="tienda" placeholder="Tienda / Local" />
     <button type="submit">Guardar</button>
   </form>
-
   <div id="lista-productos"></div>
 
   <script>
@@ -119,15 +172,12 @@
         vendedor: document.getElementById("vendedor").value,
         tienda: document.getElementById("tienda").value
       };
-
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "guardar", data }),
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `data=${encodeURIComponent(JSON.stringify({ action: "guardar", data }))}`
       });
-      await res.json();
+      await res.text();
       form.reset();
       cargarProductos();
     });
@@ -158,15 +208,14 @@
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-          <img src="${item.imagen}" />
-          <h3>${item.nombre}</h3>
-          <p>${item.descripcion}</p>
-          <p><strong>${item.categoria}</strong></p>
-          <p><strong>Precio:</strong> $${item.precio}</p>
-          <p><strong>WhatsApp:</strong> ${item.whatsapp}</p>
-          <p><strong>Email:</strong> ${item.email}</p>
-          <p><strong>Vendedor:</strong> ${item.vendedor}</p>
-          <p><strong>Tienda:</strong> ${item.tienda}</p>
+          <img src="${item.imagen}" alt="${item.nombre}" />
+          <div class="card-content">
+            <div class="title">${item.nombre}</div>
+            <div class="meta">$${item.precio} - ${item.categoria}</div>
+            <div class="meta">${item.descripcion}</div>
+            <div class="meta">${item.tienda} · ${item.vendedor}</div>
+            <div class="meta">${item.whatsapp} · ${item.email}</div>
+          </div>
           <div class="card-buttons">
             <button onclick='editar(${JSON.stringify(item)})'>Editar</button>
             <button onclick='eliminar("${item.id}")'>Eliminar</button>
@@ -189,10 +238,8 @@
       if (!confirm("¿Seguro que querés eliminar este ítem?")) return;
       await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "eliminar", data: { id } }),
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `data=${encodeURIComponent(JSON.stringify({ action: "eliminar", data: { id } }))}`
       });
       cargarProductos();
     }
@@ -203,7 +250,6 @@
       const temp = dataGlobal[index];
       dataGlobal[index] = dataGlobal[nuevo];
       dataGlobal[nuevo] = temp;
-      // Opcional: persistir reordenamiento
       cargarProductos();
     }
 
