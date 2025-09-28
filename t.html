@@ -1,183 +1,1142 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tienda Local</title>
-  <style>
-    
-body.dark-mode {
-background-color: #121212;
-color: #f0f0f0;
-font-family: Arial, sans-serif;
-margin: 0;
-padding: 0;
-}
-
-
-.container {
-max-width: 800px;
-margin: auto;
-padding: 2rem;
-}
-
-
-h1, h2, h3 {
-color: #fff;
-}
-
-h2{
-    height:px;
-}
-
-input, textarea, select, button {
-display: block;
-width: 100%;
-margin: 0.5rem 0;
-padding: 0.5rem;
-border-radius: 8px;
-border: none;
-font-size: 1rem;
-}
-
-
-button {
-background-color: #1e88e5;
-color: white;
-cursor: pointer;
-transition: background 0.3s;
-}
-
-
-button:hover {
-background-color: #1565c0;
-}
-
-
-.card {
-background-color: #1e1e1e;
-border-radius: 10px;
-padding: 1rem;
-margin: 1rem 0;
-box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-transition: transform 0.2s;
-}
-
-
-.card:hover {
-transform: scale(1.02);
-}
-
-
-.card img {
-max-width: 100%;
-border-radius: 8px;
-margin-bottom: 0.5rem;
-}
-
-
-header, footer {
-text-align: center;
-padding: 1rem;
-background-color: #1f1f1f;
-}
-
-
-.switcher button {
-display: inline-block;
-width: auto;
-margin-right: 0.5rem;
-}
-
-
-#loader {
-color: #ccc;
-font-style: italic;
-margin: 0.5rem 0;
-}
-
-
-a {
-color: #90caf9;
-}
-  </style>
-</head>
-<body class="dark-mode">
-  <header>
-    <h1>Tienda Local</h1>
-    <div class="switcher">
-      <button id="btn-producto">Ver Productos</button>
-      <button id="btn-servicio">Ver Servicios</button>
-    </div>
-  </header>
-  <main>
-    <div id="contenido"></div>
-  </main>
-  <footer>
-    <p>¿Querés ofrecer tu producto o servicio? <a href="https://wa.me/2646706973">Contáctanos</a></p>
-  </footer>
-
-  <script>
-  // main.js contenido inline o referenciado
-  let tipoActual = "producto";
-  const contenido = document.getElementById("contenido");
-  const API_URL = "https://script.google.com/macros/s/AKfycbzPRLYSiTnb5bP3gH_yYt9MlAhpyNohgmU7sSNfVuuyeZlrGnBRX96AR18O1nZIWoU/exec"; // tu URL del backend
-
-  async function cargarContenido() {
-    try {
-      const resp = await fetch(API_URL);
-      const items = await resp.json();
-      const filtrados = items.filter(item => item.tipo === tipoActual);
-      contenido.innerHTML = "";
-      filtrados.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "card lazy";
-        card.innerHTML = `
-          <img data-src="${item.imagen}" alt="${item.nombre}" class="lazy-img" />
-          <h3>${item.nombre}</h3>
-          <p>${item.descripcion}</p>
-          <p><strong>${item.categoria}</strong></p>
-          <p><strong>Precio:</strong> $${item.precio}</p>
-          <p><strong>WhatsApp:</strong> ${item.whatsapp}</p>
-          <p><strong>Email:</strong> ${item.email}</p>
-          <p><strong>Vendedor:</strong> ${item.vendedor}</p>
-          <p><strong>Tienda:</strong> ${item.tienda}</p>
-        `;
-        contenido.appendChild(card);
-      });
-      lazyLoad();
-    } catch(err) {
-      console.error("Error cargando datos:", err);
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexus Marketplace - Tienda Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   <style>
+    /* Variables de Color y Tipografía */
+    :root {
+        /* Modo Claro (Light Mode) */
+        --color-primary: #007bff; /* Azul profesional */
+        --color-secondary: #2ecc71; /* Verde (WhatsApp, Éxito) */
+        --color-background: #f4f6f9; /* Fondo suave */
+        --color-surface: #ffffff; /* Fondo de tarjetas */
+        --color-text: #333;
+        --color-text-light: #777;
+        --color-hover: #0056b3;
+        --color-advertisement: #ffaa00; /* Naranja/Amarillo para anuncios */
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --border-radius: 12px;
+        --color-danger: #e74c3c;
+        
+        /* Modo Oscuro (Dark Mode) - Variables */
+        --color-dark-primary: #8ab4f8; 
+        --color-dark-secondary: #5cb85c;
+        --color-dark-background: #121212; 
+        --color-dark-surface: #1e1e1e; 
+        --color-dark-text: #e0e0e0;
+        --color-dark-text-light: #aaaaaa;
+        --color-dark-hover: #0084ff;
+        --color-dark-advertisement: #f8c440;
     }
-  }
 
-  function lazyLoad() {
-    const imgs = document.querySelectorAll(".lazy-img");
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          img.src = img.dataset.src;
-          img.classList.remove("lazy-img");
-          obs.unobserve(img);
+    /* Aplicación del Modo Oscuro */
+    body.dark-mode {
+        background: var(--color-dark-background);
+        color: var(--color-dark-text);
+    }
+    body.dark-mode header,
+    body.dark-mode .filter-bar,
+    body.dark-mode .card,
+    body.dark-mode .modal-content {
+        background: var(--color-dark-surface);
+        color: var(--color-dark-text);
+    }
+    body.dark-mode header h1 { color: var(--color-dark-primary); }
+    body.dark-mode .switches button {
+        border-color: var(--color-dark-primary);
+        color: var(--color-dark-primary);
+    }
+    body.dark-mode .switches button.active {
+        background: var(--color-dark-primary);
+        color: var(--color-dark-background);
+    }
+    body.dark-mode .btn-info { background: var(--color-dark-primary); }
+    body.dark-mode .btn-info:hover { background: var(--color-dark-hover); }
+    body.dark-mode .btn-whatsapp { background: var(--color-dark-secondary); }
+    
+    body.dark-mode .ad-card {
+        border: 3px solid var(--color-dark-advertisement);
+        box-shadow: 0 4px 12px rgba(248, 196, 64, 0.2); 
+    }
+    body.dark-mode .ad-card-body h4 {
+        color: var(--color-dark-advertisement);
+    }
+    body.dark-mode .ad-card .ad-cta {
+        background: var(--color-dark-advertisement);
+        color: var(--color-dark-background) !important;
+    }
+
+    body.dark-mode .cta-register-banner { 
+        background: #202b3a; 
+        border: 2px solid var(--color-dark-primary);
+    }
+    body.dark-mode .cta-register-banner h3 { color: var(--color-dark-primary); }
+    body.dark-mode .btn-register { background: var(--color-dark-primary); }
+
+    
+    /* Estilos Generales */
+    * { box-sizing: border-box; }
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        background: var(--color-background);
+        color: var(--color-text);
+        line-height: 1.6;
+        transition: background 0.3s, color 0.3s;
+    }
+
+    /* 1. Encabezado */
+    header {
+        background: var(--color-surface);
+        color: var(--color-text);
+        padding: 1.5rem 1rem;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--color-primary);
+    }
+    /* Botón Modo Oscuro */
+    #darkModeToggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: var(--color-primary);
+        transition: transform 0.2s;
+    }
+    body.dark-mode #darkModeToggle {
+        color: var(--color-dark-primary);
+    }
+
+    /* 2. Navegación / Switches */
+    .nav-section {
+        padding: 0 1rem;
+        max-width: 1200px;
+        margin: 0 auto 1.5rem auto;
+    }
+    .switches {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .switches button {
+        padding: 0.75rem 1.5rem;
+        border: 2px solid var(--color-primary);
+        border-radius: 8px;
+        cursor: pointer;
+        background: transparent;
+        color: var(--color-primary);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .switches button.active {
+        background: var(--color-primary);
+        color: var(--color-surface);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+    .btn-publish-nav {
+        background: var(--color-secondary); 
+        color: white !important;
+        text-decoration: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.3s;
+        border: 2px solid var(--color-secondary); 
+    }
+
+    /* 3. Barra de Búsqueda y Filtros */
+    .filter-bar {
+        background: var(--color-surface);
+        padding: 1rem; 
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        align-items: center;
+    }
+    .filter-bar input, .filter-bar select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: var(--color-background); 
+        color: var(--color-text); 
+    }
+    body.dark-mode .filter-bar input, body.dark-mode .filter-bar select {
+         background: #2b2b2b; 
+         border-color: #444;
+         color: var(--color-dark-text);
+    }
+    .filter-group label {
+        font-size: 0.8rem; 
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--color-text-light);
+        display: block;
+    }
+    @media (min-width: 768px) {
+        .filter-bar {
+            padding: 1.5rem;
+            grid-template-columns: 2fr 1fr 1fr;
         }
-      });
+    }
+    
+    /* 4. Contenedor Principal (Grid) */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 0 1rem 2rem 1rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* 5. Tarjetas (Cards) */
+    .card {
+        background: var(--color-surface);
+        border-radius: 16px;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s;
+    }
+    .card-image-container {
+        width: 100%;
+        height: 220px;
+        overflow: hidden;
+    }
+    .card img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .card-body {
+        padding: 1rem 1.25rem;
+        flex-grow: 1;
+    }
+    .card-body h3 {
+        font-size: 1.2rem;
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+    .card-body .price {
+        font-size: 1.5rem;
+        color: var(--color-primary);
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    .card-footer {
+        padding: 1rem 1.25rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    body.dark-mode .card-footer {
+        border-top: 1px solid #333;
+    }
+
+    /* Botones */
+    .btn-info, .btn-whatsapp, .btn-share {
+        border: none;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        font-size: 0.95rem;
+        white-space: nowrap;
+    }
+    .btn-info { background: var(--color-primary); color: white; }
+    .btn-whatsapp { background: var(--color-secondary); color: white; }
+    .btn-share { 
+        background: #95a5a6; 
+        color: white; 
+        font-size: 0.85rem; 
+        padding: 0.5rem 1rem; 
+        margin-top: 10px; 
+        cursor: pointer;
+    }
+
+    /* 6. Banner CTA de Registro */
+    .cta-register-banner {
+        grid-column: 1 / -1; 
+        background: #ebf5ff; 
+        border: 2px solid var(--color-primary);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .cta-register-banner h3 {
+        margin-top: 0;
+        color: var(--color-primary);
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+    .btn-register {
+        background: var(--color-primary);
+        color: white !important;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        transition: background 0.3s;
+    }
+
+    /* 7. Modal de Detalle y Imagen */
+    .modal, .img-modal {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal.is-open, .img-modal.is-open {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-content { 
+        background: var(--color-surface);
+        padding: 2.5rem;
+        border-radius: 16px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        transform: scale(0.95);
+        transition: transform 0.3s ease, background 0.3s;
+    }
+    .modal.is-open .modal-content {
+        transform: scale(1);
+    }
+    .modal-close {
+        position: absolute;
+        top: 10px; right: 10px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--color-text-light);
+    }
+    .modal-details-grid p {
+        margin-bottom: 8px;
+        border-bottom: 1px dashed #eee;
+        padding-bottom: 5px;
+    }
+    body.dark-mode .modal-details-grid p {
+        border-bottom: 1px dashed #444;
+    }
+    .modal-full-description {
+        padding: 15px;
+        background: var(--color-background);
+        border-radius: 8px;
+        margin-bottom: 20px;
+        color: var(--color-text) !important; 
+        background: var(--color-surface);
+    }
+    body.dark-mode .modal-full-description {
+        color: var(--color-dark-text) !important;
+        background: var(--color-dark-surface);
+    }
+    .modal-full-description h4 {
+        color: inherit; 
+        margin-top: 0;
+    }
+
+    .img-modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+    }
+    .img-modal-content img {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        max-height: 100vh;
+        display: block;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .switches { flex-direction: column; }
+        .switches button, .btn-publish-nav { width: 100%; margin-bottom: 5px; justify-content: center; }
+        .modal-content { padding: 1.5rem; }
+        header { padding: 1rem 1rem; }
+        .card-footer { flex-direction: column; }
+        .btn-info, .btn-whatsapp { width: 100%; justify-content: center; }
+    }
+
+    /* --- ESTILOS PARA LA TARJETA DE PUBLICIDAD INTEGRADA --- */
+
+    /* 🔑 8. Tarjeta de Publicidad (Se integra al Grid de productos) */
+    .ad-card {
+        background: var(--color-surface);
+        border-radius: 16px;
+        box-shadow: var(--shadow-md); 
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s;
+        border: 3px solid var(--color-advertisement);
+    }
+
+    body.dark-mode .ad-card {
+        border: 3px solid var(--color-dark-advertisement);
+        box-shadow: 0 4px 12px rgba(248, 196, 64, 0.2); 
+    }
+
+    .ad-card-body {
+        padding: 1rem 1.25rem;
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    .ad-card-body h4 {
+        color: var(--color-advertisement);
+        font-size: 1.3rem;
+        margin-top: 0;
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+
+    body.dark-mode .ad-card-body h4 {
+        color: var(--color-dark-advertisement);
+    }
+
+    .ad-card-body p {
+        font-size: 0.95rem;
+        color: var(--color-text-light);
+        margin: 0;
+    }
+
+    .ad-card .ad-cta {
+        display: block;
+        background: var(--color-advertisement);
+        color: white !important;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+    body.dark-mode .ad-card .ad-cta {
+        background: var(--color-dark-advertisement);
+        color: var(--color-dark-background) !important;
+    }
+    
+    /* Reglas para Grid y Tarjeta (Ultima corrección de layout) */
+    .grid > .ad-card {
+        min-width: 0; 
+        align-self: start;
+        justify-self: stretch;
+    }
+
+    /* Contenedor de la imagen (o icono) */
+    .ad-card-image-container {
+        width: 100%;
+        height: 150px; 
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* 🔑 REGLAS CRÍTICAS DE FLEX para evitar que se encoja o estire */
+        flex-shrink: 0; 
+        flex-grow: 0; 
+    }
+    
+    /* 🚨 CORRECCIÓN FINAL CRÍTICA DE IMAGEN 🚨 */
+    .ad-card-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Esto fuerza a la imagen a llenar los 150px sin desbordar el contenedor */
+    }
+
+    /* 🚨 CORRECCIÓN FINAL CRÍTICA DE LAYOUT 🚨 */
+    /* Fuerza al enlace (<a>) a ser un contenedor flexible que respeta el tamaño de la tarjeta. */
+    .ad-card a {
+        display: flex;
+        flex-direction: column;
+        height: 100%; 
+    }
+
+    /* --- ESTILOS PARA LA PUBLICIDAD POPUP DE PANTALLA COMPLETA (Modal Temporal) --- */
+    .ad-popup-modal {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); /* Fondo oscuro más denso */
+        display: none; /* Inicialmente oculto */
+        justify-content: center;
+        align-items: center;
+        z-index: 10000; /* Asegurar que esté por encima de todo */
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+    .ad-popup-modal.is-open {
+        display: flex; /* Mostrar cuando está abierto */
+        opacity: 1;
+    }
+
+    .ad-popup-content {
+        background: var(--color-surface);
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        max-width: 80%;
+        width: 500px; /* Ancho fijo para el contenido */
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        position: relative;
+        border: 5px solid var(--color-advertisement);
+    }
+    body.dark-mode .ad-popup-content {
+        background: var(--color-dark-surface);
+        border: 5px solid var(--color-dark-advertisement);
+    }
+
+    .ad-popup-image-container {
+        margin-bottom: 20px;
+        height: 150px;
+        overflow: hidden;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .ad-popup-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+
+    .ad-popup-title {
+        color: var(--color-advertisement);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-top: 0;
+    }
+    body.dark-mode .ad-popup-title {
+        color: var(--color-dark-advertisement);
+    }
+
+    .ad-popup-text {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+    }
+
+    .ad-popup-cta {
+        display: inline-block;
+        background: var(--color-advertisement);
+        color: white !important;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+    body.dark-mode .ad-popup-cta {
+        background: var(--color-dark-advertisement);
+        color: var(--color-dark-background) !important;
+    }
+    .ad-popup-cta:hover {
+        opacity: 0.9;
+    }
+
+    /* Reutilizar el estilo de cerrar modal */
+    .ad-popup-modal .modal-close {
+        position: absolute;
+        top: 15px; right: 15px;
+        color: var(--color-text);
+        font-size: 1.8rem;
+    }
+    body.dark-mode .ad-popup-modal .modal-close {
+        color: var(--color-dark-text);
+    }
+
+    @media (max-width: 600px) {
+        .ad-popup-content {
+            padding: 2rem 1rem;
+            max-width: 90%;
+        }
+        .ad-popup-title {
+            font-size: 1.5rem;
+        }
+    }
+
+</style>
+</head>
+<body class="light-mode">
+    <header>
+        <h1><i class="fas fa-store"></i> Nexus Marketplace</h1>
+        <button id="darkModeToggle" onclick="toggleDarkMode()">
+            <i class="fas fa-moon"></i>
+        </button>
+    </header>
+    <main class="tienda-container">
+        <div class="nav-section">
+            <div class="switches">
+                <button onclick="cambiarVista('productos')" class="active"><i class="fas fa-box"></i> Productos</button>
+                <button onclick="cambiarVista('servicios')"><i class="fas fa-handshake"></i> Servicios</button>
+                <a href="#" class="btn-publish-nav" target="_blank"><i class="fas fa-cloud-upload-alt"></i> Publica Ahora</a> 
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="search-input"><i class="fas fa-search"></i> Buscar por nombre/descripción</label>
+                    <input type="text" id="search-input" placeholder="Ej: Zapatillas, Consultoría..." onkeyup="debouncedAplicarFiltros()">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="category-filter"><i class="fas fa-tags"></i> Categoría</label>
+                    <select id="category-filter" onchange="aplicarFiltros()">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="sort-filter"><i class="fas fa-sort"></i> Ordenar por</label>
+                    <select id="sort-filter" onchange="aplicarFiltros()">
+                        <option value="default">Relevancia</option>
+                        <option value="price_asc">Precio ↑</option>
+                        <option value="price_desc">Precio ↓</option>
+                        <option value="date_desc">Más Reciente</option>
+                        <option value="date_asc">Más Antiguo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid main-content-grid" id="contenedor">
+        </div>
+
+        <div class="grid" id="cta-registro-final">
+            <div class="cta-register-banner">
+                <h3>¿Quieres vender o publicar un servicio? 🚀</h3>
+                <p>¡Únete a nuestra comunidad de vendedores! Es fácil, rápido y te ayuda a llegar a más clientes.</p>
+                <a href="#" class="btn-register" target="_blank"><i class="fas fa-hand-point-up"></i> ¡Publica Ahora!</a>
+            </div>
+        </div>
+        
+    </main>
+    <div class="modal" id="modalInfo">
+        <div class="modal-content" id="modalDetalle">
+            <button class="modal-close" onclick="cerrarModal('modalInfo')"><i class="fas fa-times"></i></button>
+            <h2 id="modal-titulo">Detalle del Item</h2>
+            
+            <button class="btn-share" id="btnShareModal" style="margin-bottom: 20px;"><i class="fas fa-share-alt"></i> Copiar Enlace</button>
+            
+            <div class="modal-full-description">
+                <h4>Descripción Completa</h4>
+                <p id="modal-description"></p>
+            </div>
+            
+            <div class="modal-details-grid" id="modalContenido">
+            </div>
+        </div>
+    </div>
+
+    <div class="img-modal" id="modalImg" onclick="cerrarModal('modalImg')">
+        <div class="img-modal-content">
+            <img id="imgAmpliada" src="" alt="Imagen ampliada">
+        </div>
+    </div>
+    
+    <div class="ad-popup-modal" id="modalPublicidadPopup">
+        <div class="ad-popup-content">
+            <button class="modal-close" onclick="cerrarPublicidadModal()"><i class="fas fa-times"></i></button>
+            <div class="ad-popup-image-container" id="adPopupImageContainer">
+                <i class="fas fa-bullhorn fa-4x" style="color: var(--color-advertisement); margin: 30px 0;"></i>
+            </div>
+            <h2 class="ad-popup-title" id="adPopupTitle">¡PROMOCIÓN!</h2>
+            <p class="ad-popup-text" id="adPopupText">Aprovecha esta oferta.</p>
+            <a href="#" id="adPopupLink" target="_blank" class="ad-popup-cta" onclick="registrarClickPublicidad(this.dataset.adid); cerrarPublicidadModal();">
+                Ver Oferta <i class="fas fa-arrow-right"></i>
+            </a>
+            <small style="color: #ccc; margin-top: 10px; display: block;">Este anuncio se cerrará automáticamente en 5 segundos.</small>
+        </div>
+    </div>
+    </body>
+
+<script>
+    // URL DE LA API: Mantengo la última URL que proporcionaste.
+    const API_URL = "https://script.google.com/macros/s/AKfycbyfr9ROQWtRy-waEJQEkUq0WC3P84fsgN-ml00Wwqct5Z-1jHDuGZfuGLSzXLdMpcRA8Q/exec"; 
+    
+    let vistaActual = 'productos';
+    let datosOriginales = []; 
+    // Ahora 'publicidadActiva' es crucial para el modal temporal Y el grid.
+    let publicidadActiva = []; 
+    // Se eliminaron claves internas para que no se muestren en el modal de detalle de productos
+    const CAMPOS_A_EXCLUIR = ['ID', 'Estado', 'Imagen', 'DNI', 'Tipo', 'FechaInicio', 'FechaFin', 'Descripción', 'Clicks', 'Vendedor', 'Tienda', 'DíasPublicados', 'Posición', 'Título', 'Clics', 'Categoría', 'Precio']; 
+    
+    // Función de Debouncing (para filtros)
+    function debounce(func, delay) {
+        let timeoutId;
+        return function(...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    }
+    const debouncedAplicarFiltros = debounce(aplicarFiltros, 300);
+
+    // Formato de Moneda
+    function formatPrice(price) {
+        const num = parseFloat(price);
+        if (isNaN(num)) return price;
+        return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(num).replace('ARS', '$');
+    }
+
+    // --- FUNCIONES DE MODO OSCURO (Mantenidas) ---
+    function toggleDarkMode() {
+        const body = document.body;
+        const isDarkMode = body.classList.toggle('dark-mode');
+        const toggleButton = document.getElementById('darkModeToggle');
+        
+        if (isDarkMode) {
+            localStorage.setItem('darkMode', 'enabled');
+            toggleButton.innerHTML = '<i class="fas fa-sun"></i>';
+            body.classList.remove('light-mode');
+        } else {
+            localStorage.setItem('darkMode', 'disabled');
+            toggleButton.innerHTML = '<i class="fas fa-moon"></i>';
+            body.classList.add('light-mode');
+        }
+    }
+
+    function loadDarkModePreference() {
+        const preference = localStorage.getItem('darkMode');
+        const toggleButton = document.getElementById('darkModeToggle');
+        
+        if (preference === 'enabled') {
+            document.body.classList.add('dark-mode');
+            toggleButton.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+             document.body.classList.remove('dark-mode');
+            toggleButton.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    }
+
+
+    // --- FUNCIONES DE LA TIENDA (Mantenidas) ---
+
+    function cambiarVista(tipo) {
+        vistaActual = tipo;
+        document.querySelectorAll('.switches button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.switches button').forEach(btn => {
+            if (btn.textContent.toLowerCase().includes(tipo)) btn.classList.add('active');
+        });
+        document.getElementById('search-input').value = '';
+        document.getElementById('category-filter').value = '';
+        document.getElementById('sort-filter').value = 'default';
+        cargarDatos();
+    }
+
+    function llenarFiltroCategorias(data) {
+        const select = document.getElementById('category-filter');
+        select.innerHTML = '<option value="">Todas</option>'; 
+        const categorias = new Set();
+        data.forEach(item => {
+            if (item.Categoría && String(item.Categoría).trim() !== "") {
+                categorias.add(item.Categoría);
+            }
+        });
+        
+        const categoriasOrdenadas = Array.from(categorias).sort();
+
+        categoriasOrdenadas.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat;
+            select.appendChild(option);
+        });
+    }
+
+    function aplicarFiltros() {
+        const searchText = document.getElementById('search-input').value.toLowerCase();
+        const category = document.getElementById('category-filter').value;
+        const sortCriteria = document.getElementById('sort-filter').value;
+        
+        let datosFiltrados = [...datosOriginales];
+        
+        // 1. Filtrar por texto
+        if (searchText) {
+            datosFiltrados = datosFiltrados.filter(item => 
+                (item.Nombre && String(item.Nombre).toLowerCase().includes(searchText)) ||
+                (item.Descripción && String(item.Descripción).toLowerCase().includes(searchText))
+            );
+        }
+        
+        // 2. Filtrar por Categoría
+        if (category) {
+            datosFiltrados = datosFiltrados.filter(item => item.Categoría === category);
+        }
+
+        // 3. Aplicar Ordenamiento
+        switch (sortCriteria) {
+            case 'price_asc':
+                datosFiltrados.sort((a, b) => (parseFloat(a.Precio) || 0) - (parseFloat(b.Precio) || 0));
+                break;
+            case 'price_desc':
+                datosFiltrados.sort((a, b) => (parseFloat(b.Precio) || 0) - (parseFloat(a.Precio) || 0));
+                break;
+            case 'date_desc':
+                datosFiltrados.sort((a, b) => (String(b.ID).localeCompare(String(a.ID)))); 
+                break;
+            case 'date_asc':
+                datosFiltrados.sort((a, b) => (String(a.ID).localeCompare(String(b.ID))));
+                break;
+        }
+
+        // 4. Mostrar los datos (mostrarDatos usará la variable global publicidadActiva)
+        mostrarDatos(datosFiltrados); 
+    }
+    
+    // 🔑 FUNCIÓN DE CARGA PRINCIPAL (Carga Ítems Y Publicidad)
+    function cargarDatos() {
+        const contenedor = document.getElementById('contenedor');
+        contenedor.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</p>';
+
+        // Hacemos las dos llamadas a la API de forma paralela
+        Promise.all([
+            fetch(`${API_URL}?tipo=${vistaActual}`).then(res => res.json()),
+            fetch(`${API_URL}?tipo=publicidad`).then(res => res.json())
+        ])
+        .then(([datosItems, datosPublicidad]) => {
+            // 1. Procesar Ítems (Productos/Servicios)
+            datosOriginales = datosItems.filter(item => item.Estado && String(item.Estado).toLowerCase() === 'activo');
+            
+            // 2. Procesar Publicidad
+            // 🚨 CORRECCIÓN CRÍTICA: Almacenamos TODA la publicidad activa en la variable global.
+            publicidadActiva = datosPublicidad.filter(ad => 
+                ad.Estado && String(ad.Estado).toLowerCase() === 'activo'
+            );
+            
+            console.log(`[DEBUG PUBLICIDAD] Anuncios activos TOTALES: ${publicidadActiva.length}`);
+            
+            // 3. Rellenar filtros y aplicar filtros/renderizado
+            llenarFiltroCategorias(datosOriginales);
+            aplicarFiltros(); 
+        })
+        .catch(error => {
+            contenedor.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #e74c3c;"><i class="fas fa-exclamation-triangle"></i> **ERROR CRÍTICO DE CARGA:** No se pudo conectar a la API o no hay ítems activos. Por favor, revisa el **API_URL** y la columna **Estado**.</p>';
+            console.error("Error al cargar datos:", error);
+            datosOriginales = [];
+            publicidadActiva = [];
+            mostrarDatos([]);
+        });
+    }
+
+    // 🔑 FUNCIÓN AUXILIAR: Crea el HTML de la tarjeta de publicidad
+    function crearCardPublicidad(item) {
+        // CORRECCIÓN: Uso de item.Enlace para el link
+        const adLink = item.Enlace || '#';
+        const adImage = item.Imagen && item.Imagen.startsWith('http') ? item.Imagen : '';
+
+        return `
+            <div class="ad-card" data-ad-id="${item.ID}">
+                <a href="${adLink}" target="_blank" onclick="registrarClickPublicidad('${item.ID}')" style="text-decoration: none;">
+                    ${adImage ? `
+                        <div class="ad-card-image-container">
+                            <img src="${adImage}" alt="${item.Nombre || 'Anuncio'}" loading="lazy">
+                        </div>
+                    ` : `
+                        <div class="ad-card-image-container" style="background: var(--color-surface); display: flex; justify-content: center; align-items: center; min-height: 100px;">
+                            <i class="fas fa-bullhorn fa-4x" style="color: var(--color-advertisement);"></i>
+                        </div>
+                    `}
+                    <div class="ad-card-body">
+                        <h4><i class="fas fa-bullhorn"></i> ${item.Nombre || 'Promoción Especial'}</h4>
+                        <p>${item.Descripción || '¡Haz crecer tu negocio hoy mismo!'}</p>
+                    </div>
+                    <div class="ad-cta">
+                        ¡Más Información! <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+        `;
+    }
+
+    // 🔑 FUNCIÓN DE RENDERIZADO (CORREGIDA para usar la variable global 'publicidadActiva')
+    function mostrarDatos(items) {
+        const contenedor = document.getElementById('contenedor');
+        contenedor.innerHTML = ''; 
+        
+        if (!items || items.length === 0) {
+            const searchActive = document.getElementById('search-input').value || document.getElementById('category-filter').value;
+            
+            const mensaje = !searchActive
+                ? '<p style="grid-column: 1 / -1; text-align: center; color: var(--color-danger);"><i class="fas fa-exclamation-triangle"></i> **NO HAY ITEMS ACTIVOS.**</p>'
+                : '<p style="grid-column: 1 / -1; text-align: center;"><i class="fas fa-info-circle"></i> No hay ítems que coincidan con los filtros aplicados en esta sección.</p>';
+            
+            contenedor.innerHTML = mensaje;
+        }
+        
+        // 1. Crear un fragmento para optimizar la inserción en el DOM
+        const fragment = document.createDocumentFragment();
+
+        // 2. Convertir los items a Nodos DOM (elementos <div class="card">)
+        const itemNodes = items.map(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const imgUrl = item.Imagen && item.Imagen.startsWith('http') ? item.Imagen : 'https://via.placeholder.com/400x220?text=Sin+Imagen';
+            const price = formatPrice(item.Precio) || 'Consultar';
+            const desc = item.Descripción || 'Sin descripción disponible.';
+            
+            // Se asume que item.Nombre es para productos/servicios y no para anuncios
+            const itemName = item.Nombre || item.Titulo || 'Sin Título'; 
+            
+            card.innerHTML = `
+                <div class="card-image-container">
+                    <img src="${imgUrl}" alt="${itemName}" loading="lazy" onclick="event.stopPropagation(); mostrarImg('${imgUrl}');">
+                </div>
+                <div class="card-body">
+                    <h3>${itemName}</h3>
+                    <div class="price">${price}</div>
+                    <p class="description">${desc}</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn-info" onclick="mostrarInfo(datosOriginales.find(i => i.ID === '${item.ID}')); registrarClick('${item.ID}');">
+                        <i class="fas fa-info-circle"></i> Detalle
+                    </button>
+                    <a href="https://wa.me/${item.WhatsApp}?text=Hola! Vi tu ${vistaActual.slice(0, -1)}: ${itemName}. Me interesa!" 
+                       class="btn-whatsapp" target="_blank" onclick="registrarClick('${item.ID}')">
+                        <i class="fab fa-whatsapp"></i> Contactar
+                    </a>
+                </div>
+            `;
+            return card;
+        });
+
+        // 3. Insertar la publicidad del Grid
+        // Filtramos de la lista global, solo los que tienen una POSICIÓN válida (>= 1)
+        const adsParaGrid = publicidadActiva.filter(ad => 
+            !isNaN(parseInt(ad.Posición)) && parseInt(ad.Posición) >= 1
+        );
+
+        if (adsParaGrid && adsParaGrid.length > 0) {
+            adsParaGrid.sort((a, b) => parseInt(a.Posición) - parseInt(b.Posición));
+
+            for (let i = adsParaGrid.length - 1; i >= 0; i--) {
+                const ad = adsParaGrid[i];
+                const posicion = parseInt(ad.Posición);
+                
+                const adNodeHTML = crearCardPublicidad(ad); 
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = adNodeHTML;
+                const adElement = tempDiv.firstChild;
+                
+                if (adElement) {
+                    if (posicion >= 1 && posicion && posicion <= itemNodes.length) { 
+                        itemNodes.splice(posicion, 0, adElement); 
+                    } else if (posicion > itemNodes.length) {
+                        itemNodes.push(adElement);
+                    }
+                }
+                console.log(`[DEBUG PUBLICIDAD] Anuncio ID: ${ad.ID} (Posición: ${posicion}) insertado en el Grid.`);
+            }
+        } else {
+            console.log("[DEBUG PUBLICIDAD] No hay anuncios activos con Posición válida para el Grid.");
+        }
+        
+        // 4. Renderizar el array final al contenedor usando un fragmento
+        itemNodes.forEach(node => {
+            fragment.appendChild(node);
+        });
+
+        contenedor.appendChild(fragment); 
+    }
+    
+    // --- REGISTROS Y MODALES (Mantenidas) ---
+
+    function registrarClick(itemID) {
+         if (!itemID) return;
+         fetch(`${API_URL}?tipo=${vistaActual}&accion=click&id=${itemID}`, { method: 'POST' })
+         .then(res => {
+             if (res.ok) console.log(`Click registrado para el item ID: ${itemID} (${vistaActual})`);
+         })
+         .catch(error => console.error("Error al registrar click:", error));
+    }
+
+    function registrarClickPublicidad(adID) {
+        fetch(`${API_URL}?tipo=publicidad&accion=click&id=${adID}`, { method: 'POST' })
+        .then(res => {
+            if (res.ok) console.log(`Click registrado para el anuncio ID: ${adID} (Publicidad)`);
+         })
+         .catch(error => console.error("Error al registrar click de publicidad:", error));
+    }
+
+    function mostrarInfo(item) {
+        const modal = document.getElementById('modalInfo');
+        const titulo = document.getElementById('modal-titulo');
+        const contenido = document.getElementById('modalContenido');
+        const descripcionCompleta = document.getElementById('modal-description');
+        const btnShare = document.getElementById('btnShareModal');
+        
+        titulo.textContent = `Detalle de: ${item.Nombre || item.Titulo}`;
+        descripcionCompleta.textContent = item.Descripción || 'No hay una descripción completa disponible.';
+
+        let detailHTML = '';
+        for (const [key, value] of Object.entries(item)) {
+            if (!CAMPOS_A_EXCLUIR.includes(key) && value) {
+                const displayKey = key === 'WhatsApp' ? 'Contacto' : key;
+                const displayValue = (key === 'Precio' && !isNaN(value)) ? formatPrice(value) : value;
+                detailHTML += `<p><strong>${displayKey}:</strong> ${displayValue}</p>`;
+            }
+        }
+        contenido.innerHTML = detailHTML;
+        
+        btnShare.onclick = () => {
+            const url = `${window.location.origin}${window.location.pathname}?tipo=${vistaActual}&id=${item.ID}`;
+            if (navigator.clipboard) {
+                 navigator.clipboard.writeText(url).then(() => {
+                     alert('Enlace copiado al portapapeles!');
+                 }).catch(err => {
+                     console.error('Error al copiar el enlace:', err);
+                     alert('Error al copiar. Por favor, copia la URL de la barra de direcciones.');
+                 });
+            } else {
+                 alert('Tu navegador no soporta la copia automática. Por favor, copia la URL de la barra de direcciones.');
+            }
+        };
+
+        modal.classList.add('is-open'); 
+    }
+    
+    function mostrarImg(src) {
+        const modal = document.getElementById('modalImg');
+        document.getElementById('imgAmpliada').src = src && src.startsWith('http') ? src : 'https://via.placeholder.com/600x400?text=Imagen+No+Disponible';
+        modal.classList.add('is-open'); 
+    }
+
+    function cerrarModal(id) {
+        document.getElementById(id).classList.remove('is-open');
+    }
+
+    window.onclick = e => {
+        if (e.target.id === 'modalInfo') cerrarModal('modalInfo');
+        if (e.target.id === 'modalImg') cerrarModal('modalImg');
+    };
+
+    // --- FUNCIONES DE PUBLICIDAD POPUP TEMPORAL ACTUALIZADAS ---
+    const AD_POPUP_INTERVAL = 60000; // 60 segundos
+    const AD_POPUP_DURATION = 5000; // 5 segundos
+    let adPopupTimeout = null;
+    let adInterval = null;
+
+    function mostrarPublicidadModal() {
+        // Filtramos solo los anuncios que no están en el grid (Posición NO válida)
+        const adsParaPopup = publicidadActiva.filter(ad => 
+            isNaN(parseInt(ad.Posición)) || parseInt(ad.Posición) < 1
+        );
+        
+        if (adsParaPopup.length === 0) {
+            console.log("No hay anuncios activos sin posición válida para mostrar en el modal POPUP.");
+            return; 
+        }
+
+        // 1. Seleccionar un anuncio aleatorio de la lista filtrada
+        const randomIndex = Math.floor(Math.random() * adsParaPopup.length);
+        const ad = adsParaPopup[randomIndex];
+
+        // 2. Referencias del DOM
+        const modal = document.getElementById('modalPublicidadPopup');
+        const title = document.getElementById('adPopupTitle');
+        const text = document.getElementById('adPopupText');
+        const link = document.getElementById('adPopupLink');
+        const imageContainer = document.getElementById('adPopupImageContainer');
+        
+        // 3. Inyectar los datos del anuncio
+        title.textContent = ad.Nombre || '¡PROMOCIÓN IMPERDIBLE!';
+        text.textContent = ad.Descripción || 'Aprovecha esta oferta por tiempo limitado.';
+        link.href = ad.Enlace || '#';
+        link.dataset.adid = ad.ID; // Guarda el ID para registrar el clic
+        link.textContent = 'Ver Oferta '; // Texto del botón
+        
+        // 4. Manejar la imagen/icono
+        imageContainer.innerHTML = '';
+        if (ad.Imagen && ad.Imagen.startsWith('http')) {
+             imageContainer.innerHTML = `<img src="${ad.Imagen}" alt="${ad.Nombre || 'Anuncio'}">`;
+        } else {
+            // Mostrar icono si no hay imagen válida
+            imageContainer.innerHTML = `<i class="fas fa-bullhorn fa-4x" style="color: var(--color-advertisement); margin: 30px 0;"></i>`;
+        }
+        
+        // 5. Mostrar el modal
+        modal.classList.add('is-open');
+
+        // 6. Cierra automáticamente después de 5 segundos
+        adPopupTimeout = setTimeout(() => {
+            cerrarPublicidadModal();
+        }, AD_POPUP_DURATION);
+    }
+
+    function cerrarPublicidadModal() {
+        const modal = document.getElementById('modalPublicidadPopup');
+        modal.classList.remove('is-open');
+        if (adPopupTimeout) {
+            clearTimeout(adPopupTimeout);
+            adPopupTimeout = null;
+        }
+    }
+
+    function iniciarIntervaloPublicidad() {
+        // Asegurarse de que no haya intervalos duplicados
+        if (adInterval) {
+            clearInterval(adInterval);
+        }
+        
+        // Iniciar el intervalo: mostrar publicidad cada 60 segundos
+        adInterval = setInterval(mostrarPublicidadModal, AD_POPUP_INTERVAL);
+    }
+
+    // Se llama al final de la carga inicial
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDarkModePreference();
+        cambiarVista('productos');
+        iniciarIntervaloPublicidad(); // INICIA EL TEMPORIZADOR DE PUBLICIDAD
     });
-    imgs.forEach(img => observer.observe(img));
-  }
-
-  document.getElementById("btn-producto").addEventListener("click", () => {
-    tipoActual = "producto";
-    cargarContenido();
-  });
-  document.getElementById("btn-servicio").addEventListener("click", () => {
-    tipoActual = "servicio";
-    cargarContenido();
-  });
-
-  setInterval(cargarContenido, 10000);
-  cargarContenido();
-  </script>
-
+</script>
 </body>
 </html>
